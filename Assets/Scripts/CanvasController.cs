@@ -6,11 +6,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+using System.Threading.Tasks;
 
 //made by mistake 
 
 public class CanvasController : MonoBehaviour
 {
+
+	[Header("Management Scripts")]
+	[SerializeField] ColorDifferenceScript _colorDiffScript;
+
 	[Header("Sound Button")]
 	[SerializeField] Sprite[] MusicIcon;
 	[SerializeField] Image icon;
@@ -31,10 +36,16 @@ public class CanvasController : MonoBehaviour
 	[Header("Labels")]
 	[SerializeField] TextMeshProUGUI HintLabel;
 
+	[Header("Prefabs")]
+	[SerializeField] GameObject HintPrefab;
+
 
 	// Other private members
 
 	private static int _hintsAvalaible;
+
+	// Experiment
+	[SerializeField] GameObject obj;
  
 	private void Start()
 	{
@@ -56,10 +67,11 @@ public class CanvasController : MonoBehaviour
 	private void HintButtonSequence()
 	{
 		if (_hintsAvalaible <= 0)
-			StartCoroutine("HintTextAnimation");
+			HintTextAnimation();
 		else
 		{
-			Debug.Log("Hint Available");
+			_hintsAvalaible--;
+			_colorDiffScript.InitiateHintSequence(HintPrefab);
 		}
 	}
 
@@ -80,11 +92,11 @@ public class CanvasController : MonoBehaviour
 
 
 
-	IEnumerable HintTextAnimation()
+	async Task HintTextAnimation()
 	{
-		HintLabel.rectTransform.DOAnchorPosY(HintLabel.rectTransform.anchoredPosition.y - 20f, 1f);
-		yield return new WaitForSeconds(2);
-		HintLabel.rectTransform.DOAnchorPosY(HintLabel.rectTransform.anchoredPosition.y + 20f, 1f);
+		HintLabel.rectTransform.DOAnchorPosY(HintLabel.rectTransform.anchoredPosition.y - 10, 1f);
+		await Task.Delay(3);
+		HintLabel.rectTransform.DOAnchorPosY(HintLabel.rectTransform.anchoredPosition.y + 10, 1f);
 	}
 
 }
