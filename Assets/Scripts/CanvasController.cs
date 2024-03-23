@@ -7,6 +7,9 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using System.Threading.Tasks;
+using UnityEditor.Search;
+using UnityEditor.Tilemaps;
+using Unity.VisualScripting;
 
 //made by mistake 
 
@@ -44,6 +47,7 @@ public class CanvasController : MonoBehaviour
 
 	private static int _hintsAvalaible;
 
+
 	// Experiment
 	[SerializeField] GameObject obj;
  
@@ -64,15 +68,35 @@ public class CanvasController : MonoBehaviour
 		_hintsAvalaible = PlayerPrefs.GetInt("Hints", 3);
 	}
 
-	private void HintButtonSequence()
+	private async void HintButtonSequence()
 	{
+		if (HintButton.interactable)
+			await ShowHint();
+		
+	}
+
+	private async Task ShowHint()
+	{
+		HintButton.interactable = false;
+
+		GameObject obj = null;
 		if (_hintsAvalaible <= 0)
-			HintTextAnimation();
+		{
+			float animTime = 1f;
+			HintLabel.rectTransform.DOAnchorPosY(HintLabel.rectTransform.anchoredPosition.y - 175, animTime);
+			await Task.Delay(2000);
+			HintLabel.rectTransform.DOAnchorPosY(HintLabel.rectTransform.anchoredPosition.y + 175, animTime);
+			await Task.Delay((int)animTime*1000);
+		}	
 		else
 		{
 			_hintsAvalaible--;
-			_colorDiffScript.InitiateHintSequence(HintPrefab);
+			obj = _colorDiffScript.InitiateHintSequence(HintPrefab);
+			await Task.Delay(3000);
+			Destroy(obj);
 		}
+	
+		HintButton.interactable = true;
 	}
 
 	private void GameScreenBtnEvents(State state, int multiplier)
@@ -94,9 +118,9 @@ public class CanvasController : MonoBehaviour
 
 	async Task HintTextAnimation()
 	{
-		HintLabel.rectTransform.DOAnchorPosY(HintLabel.rectTransform.anchoredPosition.y - 10, 1f);
+		
 		await Task.Delay(3);
-		HintLabel.rectTransform.DOAnchorPosY(HintLabel.rectTransform.anchoredPosition.y + 10, 1f);
+		
 	}
 
 }

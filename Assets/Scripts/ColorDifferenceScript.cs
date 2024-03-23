@@ -246,16 +246,13 @@ public class ColorDifferenceScript : MonoBehaviour
 		}
 		return new Vector2(-1,-1);
 	}
-	public void InitiateHintSequence(GameObject hintPrefab)
+	public GameObject InitiateHintSequence(GameObject hintPrefab)
 	{
 		Vector2 _hintPoint = DiffImgPosToLocalPos(_diffCenterPoints[0]);
 		GameObject hintObj = Instantiate(hintPrefab,differenceImage.transform);
 		hintObj.transform.localPosition = _hintPoint;
-		Destroy(hintObj, _timeToRemoveHint);
+		return hintObj;
 	}
-
-
-
 	private Vector2 DiffImgPosToLocalPos(Vector2 centerPoint)
 	{
 		centerPoint.x = centerPoint.x * (differenceImage.rectTransform.rect.width / differenceImage.sprite.texture.width);
