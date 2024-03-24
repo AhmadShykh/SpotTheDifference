@@ -51,7 +51,6 @@ public class ColorDifferenceScript : MonoBehaviour
 		_differenceClicked = false;
 
 	}
-
 	private async void DiffBtnClickSequence()
 	{
 		if (!_differenceClicked)
@@ -68,7 +67,7 @@ public class ColorDifferenceScript : MonoBehaviour
 					await RemovePointDifference(point);
 					_differenceClicked = false;
 
-					if (_diffCenterPoints.Count == 0)
+					if (_diffCenterPoints.Count <= 0)
 						GameManager.instance.UpdateGameState(State.GameScreen);
 
 					return;
@@ -85,14 +84,13 @@ public class ColorDifferenceScript : MonoBehaviour
 		_tries++;
 		
 	}
-
-
 	Vector2 MouseWorldPosToDiffImgPos(Vector2 pixelClickedPos)
 	{
 		RectTransformUtility.ScreenPointToLocalPointInRectangle(differenceImage.rectTransform, Input.mousePosition, GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>(), out pixelClickedPos);
 
 		pixelClickedPos.x = pixelClickedPos.x * (differenceImage.sprite.texture.width / differenceImage.rectTransform.rect.width);
 		pixelClickedPos.y = pixelClickedPos.y * (differenceImage.sprite.texture.height / differenceImage.rectTransform.rect.height);
+		Debug.Log(pixelClickedPos);
 		return pixelClickedPos;
 	}
 	private async Task RemovePointDifference(Vector2 point)
@@ -127,6 +125,7 @@ public class ColorDifferenceScript : MonoBehaviour
 			// Set sprites to null to clear references
 			originalImage.sprite = null;
 			differenceImage.sprite = null;
+			_diffCenterPoints.Clear();
 
 			SelectRandomPicture();
 			ImageDifferenceCreator(); 
@@ -183,8 +182,6 @@ public class ColorDifferenceScript : MonoBehaviour
 				tries++;
 			}
 
-			Debug.Log(tries);
-
 			_diffCenterPoints.Add(new Vector2(centerX, centerY));
 
 			tries = 0;
@@ -197,7 +194,6 @@ public class ColorDifferenceScript : MonoBehaviour
 				diffCenterY = _differenceRadius + ((diffCenterY + Random.Range(0, _differenceValue)) % (textureHeight - 2 * _differenceRadius));
 				tries++;
 			}
-			Debug.Log(tries);
 
 			int orgStrX, orgEndX, diffStrX;
 
@@ -252,15 +248,18 @@ public class ColorDifferenceScript : MonoBehaviour
 	}
 	public GameObject InitiateHintSequence(GameObject hintPrefab)
 	{
-		Vector2 _hintPoint = DiffImgPosToLocalPos(_diffCenterPoints[0]);
+		Vector2 hintPoint = DiffImgPosToLocalPos(_diffCenterPoints[0]);
+		Debug.Log(hintPoint);
+		Debug.Log(_diffCenterPoints[0]);
 		GameObject hintObj = Instantiate(hintPrefab,differenceImage.transform);
-		hintObj.transform.localPosition = _hintPoint;
+		hintObj.transform.localPosition = hintPoint;
 		return hintObj;
 	}
 	private Vector2 DiffImgPosToLocalPos(Vector2 centerPoint)
 	{
-		centerPoint.x = centerPoint.x * (differenceImage.rectTransform.rect.width / differenceImage.sprite.texture.width);
-		centerPoint.y = centerPoint.y * (differenceImage.rectTransform.rect.height / differenceImage.sprite.texture.height);
+		centerPoint.x = centerPoint.x * ( differenceImage.rectTransform.rect.width/differenceImage.sprite.texture.width) ;
+		centerPoint.y = centerPoint.y * ( differenceImage.rectTransform.rect.height/ differenceImage.sprite.texture.height) ;
+		Debug.Log(differenceImage.rectTransform.rect.height + " " +differenceImage.sprite.texture.height);
 		return centerPoint;
 	}
 }

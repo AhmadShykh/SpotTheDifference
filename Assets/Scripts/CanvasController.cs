@@ -66,7 +66,7 @@ public class CanvasController : MonoBehaviour
 
 		//Other Tasks
 		icon.sprite = PlayerPrefs.GetInt("Music") == 0 ? MusicIcon[0] : MusicIcon[1];
-		_hintsAvalaible = PlayerPrefs.GetInt("Hints", 3);
+		
 	}
 
 	private void SwitchCanvas(State state)
@@ -74,7 +74,12 @@ public class CanvasController : MonoBehaviour
 		if(state == State.MainScreen )
 			GameCanvas.transform.position -= _gameCanvasOffset * Vector3.left;
 		else if (state == State.GameScreen)
+		{
+			_hintsAvalaible = PlayerPrefs.GetInt("Hints", 3);
+			_hintsAvalaible = 1000;
 			GameCanvas.transform.position += _gameCanvasOffset * Vector3.left;
+		}
+			
 	}
 
 	private async void HintButtonSequence()
