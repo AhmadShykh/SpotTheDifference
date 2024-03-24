@@ -29,9 +29,9 @@ public class ColorDifferenceScript : MonoBehaviour
 	private int _currentDiffCount = 3;
 	private int _incDiffAfterImgCount = 10;
 	private int _diffRadiusPer = 5;
-	
+
+	private int _maxTriesCount = 5;
 	private int _tries = 0;
-	private int _maxTriesCount = 4;
 	private float _timeToRemoveHint = 4;
 	private List<Vector2> _diffCenterPoints = new List<Vector2>();
 
@@ -76,10 +76,14 @@ public class ColorDifferenceScript : MonoBehaviour
 				}
 			}
 		}
-		_tries++;
-		if (_tries >= _maxTriesCount)
-			GameManager.instance.UpdateGameState(State.MainScreen);
 
+		if (_tries >= _maxTriesCount)
+		{
+			_tries = 0;
+			GameManager.instance.UpdateGameState(State.InterstitialAd);
+		}
+		_tries++;
+		
 	}
 
 

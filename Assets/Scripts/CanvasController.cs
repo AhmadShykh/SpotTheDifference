@@ -59,13 +59,22 @@ public class CanvasController : MonoBehaviour
 		GameCanvas.transform.position -= _gameCanvasOffset * Vector3.left;
 
 		//Setting Events 
-		PlayButton.onClick.AddListener(() => GameScreenBtnEvents(State.GameScreen, _gameCanvasOffset));
-		BackButton.onClick.AddListener(() => GameScreenBtnEvents(State.MainScreen, -_gameCanvasOffset));
+		PlayButton.onClick.AddListener(() => GameScreenBtnEvents(State.GameScreen));
+		BackButton.onClick.AddListener(() => GameScreenBtnEvents(State.MainScreen));
+		GameManager.OnStateChangeAction += SwitchCanvas;
 		HintButton.onClick.AddListener(HintButtonSequence);
 
 		//Other Tasks
 		icon.sprite = PlayerPrefs.GetInt("Music") == 0 ? MusicIcon[0] : MusicIcon[1];
 		_hintsAvalaible = PlayerPrefs.GetInt("Hints", 3);
+	}
+
+	private void SwitchCanvas(State state)
+	{
+		if(state == State.MainScreen )
+			GameCanvas.transform.position -= _gameCanvasOffset * Vector3.left;
+		else if (state == State.GameScreen)
+			GameCanvas.transform.position += _gameCanvasOffset * Vector3.left;
 	}
 
 	private async void HintButtonSequence()
@@ -91,6 +100,7 @@ public class CanvasController : MonoBehaviour
 		else
 		{
 			_hintsAvalaible--;
+			PlayerPrefs.SetInt("Hints", _hintsAvalaible);
 			obj = _colorDiffScript.InitiateHintSequence(HintPrefab);
 			await Task.Delay(3000);
 			Destroy(obj);
@@ -99,9 +109,8 @@ public class CanvasController : MonoBehaviour
 		HintButton.interactable = true;
 	}
 
-	private void GameScreenBtnEvents(State state, int multiplier)
+	private void GameScreenBtnEvents(State state)
 	{
-		GameCanvas.transform.position += multiplier * Vector3.left ;
 		GameManager.instance.UpdateGameState(state);
 	}
 

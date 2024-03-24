@@ -12,7 +12,9 @@ public class GameManager : MonoBehaviour
 	public State _currentState;
 
 	//------------------------Serealized Fields----------------------
-	
+
+	[SerializeField] AdManager _adManager;
+
 	private GameManager()
 	{
 
@@ -42,10 +44,17 @@ public class GameManager : MonoBehaviour
 				StartGameScreenSequnence();
 				break;
 			case State.InterstitialAd:
+				StartInterstitialAdSequence();
 				break;
 		}
 
 		OnStateChangeAction?.Invoke(_currentState);
+	}
+
+	private void StartInterstitialAdSequence()
+	{
+		_adManager.LoadInterstitialAd();
+		_adManager.ShowInterstitialAd();
 	}
 
 	private void StartMainScreenSequnence()
