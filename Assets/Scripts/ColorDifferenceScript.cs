@@ -32,7 +32,7 @@ public class ColorDifferenceScript : MonoBehaviour
 
 	private int _maxTriesCount = 5;
 	private int _tries = 0;
-	private float _timeToRemoveHint = 4;
+	private int _showBannerAfter = 4;
 	private List<Vector2> _diffCenterPoints = new List<Vector2>();
 
 	private int _maxThreads = 4;
@@ -40,14 +40,31 @@ public class ColorDifferenceScript : MonoBehaviour
 
 	private bool _differenceClicked;
 	private int _differenceRadius;
+	private int _imagesShown;
 
-	void Start()
+	private void Awake()
 	{
-		_folderPath = "D:\\Unity Projects\\SpotTheDifference\\Assets\\Images\\All Images";
+		// Events and listeners
 		GameManager.OnStateChangeAction += StartGameSequence;
-
+		GameManager.OnStateChangeAction += MainScreenSequence;
 		_diffBtn = differenceImage.gameObject.GetComponent<Button>();
 		_diffBtn.onClick.AddListener(DiffBtnClickSequence);
+	}
+
+	private void MainScreenSequence(State state)
+	{
+		if (state == State.MainScreen)
+			_imagesShown = _showBannerAfter;
+	}
+
+	private void OnDestroy()
+	{
+		GameManager.OnStateChangeAction -= StartGameSequence;
+	}
+	void Start()
+	{
+		// Initial Variable Set Values
+		_folderPath = "D:\\Unity Projects\\SpotTheDifference\\Assets\\Images\\All Images";
 		_differenceClicked = false;
 
 	}
@@ -55,6 +72,7 @@ public class ColorDifferenceScript : MonoBehaviour
 	{
 		if (!_differenceClicked)
 		{
+			_differenceClicked = true;
 			// Getting the Mouse Clicked Position on the image
 			Vector2 pixelClickedPos = MouseWorldPosToDiffImgPos(Input.mousePosition);
 			
@@ -63,17 +81,18 @@ public class ColorDifferenceScript : MonoBehaviour
 			{
 				if (PointWithinCircle(pixelClickedPos, point))
 				{
-					_differenceClicked = true;
+					
 					await RemovePointDifference(point);
-					_differenceClicked = false;
-
+					
 					if (_diffCenterPoints.Count <= 0)
 						GameManager.instance.UpdateGameState(State.GameScreen);
-
+					_differenceClicked = false;
 					return;
 
 				}
 			}
+			_differenceClicked = false;
+
 		}
 
 		if (_tries >= _maxTriesCount)
@@ -81,7 +100,8 @@ public class ColorDifferenceScript : MonoBehaviour
 			_tries = 0;
 			GameManager.instance.UpdateGameState(State.InterstitialAd);
 		}
-		_tries++;
+		else
+			_tries++;
 		
 	}
 	Vector2 MouseWorldPosToDiffImgPos(Vector2 pixelClickedPos)
@@ -117,6 +137,7 @@ public class ColorDifferenceScript : MonoBehaviour
 	{
 		if(state == State.GameScreen)
 		{
+			_imagesShown++;
 			if(originalImage.sprite != null)
 				Destroy(originalImage.sprite.texture);
 			if (differenceImage.sprite != null)
@@ -128,7 +149,13 @@ public class ColorDifferenceScript : MonoBehaviour
 			_diffCenterPoints.Clear();
 
 			SelectRandomPicture();
-			ImageDifferenceCreator(); 
+			ImageDifferenceCreator();
+
+
+
+			if (_imagesShown % 4 == 0)
+				GameManager.instance.ShowBanner();
+
 		}
 	}
 	private void SelectRandomPicture()

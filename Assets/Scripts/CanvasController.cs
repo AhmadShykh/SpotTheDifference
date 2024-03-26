@@ -11,7 +11,6 @@ using UnityEditor.Search;
 using UnityEditor.Tilemaps;
 using Unity.VisualScripting;
 
-//made by mistake 
 
 public class CanvasController : MonoBehaviour
 {
@@ -29,8 +28,6 @@ public class CanvasController : MonoBehaviour
     [SerializeField] GameObject OptionsCanvas;
     [SerializeField] GameObject GameCanvas;
 
-	private int _gameCanvasOffset = 8;
-
 	[Header("Buttons")]
 	[SerializeField] Button PlayButton;
 	[SerializeField] Button BackButton;
@@ -43,41 +40,47 @@ public class CanvasController : MonoBehaviour
 	[SerializeField] GameObject HintPrefab;
 
 
+	private int _gameCanvasOffset = 8;
+	private int _maxShowHintTime = 3;
+
 	// Other private members
 
 	private static int _hintsAvalaible;
 
 
-	// Experiment
-	[SerializeField] GameObject obj;
- 
-	private void Start()
-	{
-		//Setting Game Object State
-		MainCanvas.SetActive(true);
-		OptionsCanvas.SetActive(false);
-		GameCanvas.transform.position -= _gameCanvasOffset * Vector3.left;
 
-		//Setting Events 
+	// Experiment
+
+
+	private void Awake()
+	{
+		//Setting Events and listeners
 		PlayButton.onClick.AddListener(() => GameScreenBtnEvents(State.GameScreen));
 		BackButton.onClick.AddListener(() => GameScreenBtnEvents(State.MainScreen));
-		GameManager.OnStateChangeAction += SwitchCanvas;
 		HintButton.onClick.AddListener(HintButtonSequence);
+		GameManager.OnStateChangeAction += SwitchCanvas;
 
+		// Setting Default Positions
+		GameCanvas.transform.position = new Vector3(_gameCanvasOffset, GameCanvas.transform.position.y);
+	}
+	private void OnDestroy()
+	{
+		GameManager.OnStateChangeAction -= SwitchCanvas;
+	}
+	private void Start()
+	{
 		//Other Tasks
 		icon.sprite = PlayerPrefs.GetInt("Music") == 0 ? MusicIcon[0] : MusicIcon[1];
-		
 	}
 
 	private void SwitchCanvas(State state)
 	{
-		if(state == State.MainScreen )
-			GameCanvas.transform.position -= _gameCanvasOffset * Vector3.left;
+		if (state == State.MainScreen)
+			GameCanvas.transform.DOMoveX(_gameCanvasOffset, 1); //= new Vector3(10, GameCanvas.transform.localPosition.y,0);
 		else if (state == State.GameScreen)
 		{
 			_hintsAvalaible = PlayerPrefs.GetInt("Hints", 3);
-			_hintsAvalaible = 1000;
-			GameCanvas.transform.position += _gameCanvasOffset * Vector3.left;
+			GameCanvas.transform.DOMoveX(0, 1);// = new Vector3(0, GameCanvas.transform.localPosition.y, 0);
 		}
 			
 	}
@@ -107,7 +110,7 @@ public class CanvasController : MonoBehaviour
 			_hintsAvalaible--;
 			PlayerPrefs.SetInt("Hints", _hintsAvalaible);
 			obj = _colorDiffScript.InitiateHintSequence(HintPrefab);
-			await Task.Delay(3000);
+			await Task.Delay(_maxShowHintTime*1000);
 			Destroy(obj);
 		}
 	

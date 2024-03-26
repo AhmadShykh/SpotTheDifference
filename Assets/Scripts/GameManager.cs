@@ -8,7 +8,7 @@ using UnityEditor.SceneTemplate;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-	public static Action<State> OnStateChangeAction;
+	public static event Action<State> OnStateChangeAction;
 	public State _currentState;
 
 	//------------------------Serealized Fields----------------------
@@ -24,11 +24,15 @@ public class GameManager : MonoBehaviour
 		if (instance == null)
 		{
 			instance = this;
-			UpdateGameState(State.MainScreen);
 			DontDestroyOnLoad(this);
 		}
 		else
 			Destroy(this);
+}
+
+	private void Start()
+	{
+		UpdateGameState(State.MainScreen);
 	}
 
 	public void UpdateGameState(State newState)
@@ -66,6 +70,12 @@ public class GameManager : MonoBehaviour
 	{
 		
 	}
+
+	public void ShowBanner()
+	{
+		_adManager.LoadBannerAd();
+	}
+
 }
 
 public enum State

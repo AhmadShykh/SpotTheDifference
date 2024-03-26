@@ -30,6 +30,7 @@ public class AdManager : MonoBehaviour
 
     private void Start()
     {
+        PlayerPrefs.DeleteAll();
         MobileAds.RaiseAdEventsOnUnityMainThread = true;
         MobileAds.Initialize(initStatus => {
             print("Ads Initialised !!");
