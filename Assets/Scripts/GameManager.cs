@@ -5,6 +5,15 @@ using System;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneTemplate;
 
+
+public enum State
+{
+	MainScreen,
+	GameScreen,
+	InterstitialAd
+}
+
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
@@ -21,14 +30,10 @@ public class GameManager : MonoBehaviour
 	}
 	private void Awake()
 	{
-		if (instance == null)
-		{
-			instance = this;
-			DontDestroyOnLoad(this);
-		}
-		else
-			Destroy(this);
-}
+		
+		instance = this;
+		
+	}
 
 	private void Start()
 	{
@@ -78,10 +83,4 @@ public class GameManager : MonoBehaviour
 
 }
 
-public enum State
-{
-	MainScreen,
-	GameScreen,
-	InterstitialAd
-}
 

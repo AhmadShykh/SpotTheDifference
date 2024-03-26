@@ -32,9 +32,11 @@ public class CanvasController : MonoBehaviour
 	[SerializeField] Button PlayButton;
 	[SerializeField] Button BackButton;
 	[SerializeField] Button HintButton;
+	[SerializeField] Button SoundButton;
 
 	[Header("Labels")]
 	[SerializeField] TextMeshProUGUI HintLabel;
+	[SerializeField] TextMeshProUGUI ScoreLabel;
 
 	[Header("Prefabs")]
 	[SerializeField] GameObject HintPrefab;
@@ -57,11 +59,11 @@ public class CanvasController : MonoBehaviour
 		//Setting Events and listeners
 		PlayButton.onClick.AddListener(() => GameScreenBtnEvents(State.GameScreen));
 		BackButton.onClick.AddListener(() => GameScreenBtnEvents(State.MainScreen));
+		SoundButton.onClick.AddListener(ToggleSound);
 		HintButton.onClick.AddListener(HintButtonSequence);
 		GameManager.OnStateChangeAction += SwitchCanvas;
 
-		// Setting Default Positions
-		GameCanvas.transform.position = new Vector3(_gameCanvasOffset, GameCanvas.transform.position.y);
+		
 	}
 	private void OnDestroy()
 	{
@@ -69,6 +71,8 @@ public class CanvasController : MonoBehaviour
 	}
 	private void Start()
 	{
+		// Setting Default Positions
+		GameCanvas.transform.position = new Vector3(_gameCanvasOffset, GameCanvas.transform.position.y);
 		//Other Tasks
 		icon.sprite = PlayerPrefs.GetInt("Music") == 0 ? MusicIcon[0] : MusicIcon[1];
 	}
@@ -76,11 +80,14 @@ public class CanvasController : MonoBehaviour
 	private void SwitchCanvas(State state)
 	{
 		if (state == State.MainScreen)
-			GameCanvas.transform.DOMoveX(_gameCanvasOffset, 1); //= new Vector3(10, GameCanvas.transform.localPosition.y,0);
+		{
+			ScoreLabel.text = String.Format($"Score: {Scoring._score}");
+			GameCanvas.transform.DOMoveX(_gameCanvasOffset, 1);
+		}
 		else if (state == State.GameScreen)
 		{
 			_hintsAvalaible = PlayerPrefs.GetInt("Hints", 3);
-			GameCanvas.transform.DOMoveX(0, 1);// = new Vector3(0, GameCanvas.transform.localPosition.y, 0);
+			GameCanvas.transform.DOMoveX(0, 1);
 		}
 			
 	}

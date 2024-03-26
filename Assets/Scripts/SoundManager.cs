@@ -8,11 +8,9 @@ public class SoundManager : MonoBehaviour
 	[SerializeField] AudioMixerGroup MusicGroup;
 
 	public static SoundManager instance;
-	public static Action<State> OnStateChangeAction;
+	public static Action<SoundState> OnStateChangeAction;
 	public SoundState _currentState {
-		get {
-			return PlayerPrefs.GetInt("Music", 0) == 0 ? SoundState.MusicOn : SoundState.MusicOff;
-		}
+		get => _currentState;
 		private set
 		{
 			int musicVol = (value == SoundState.MusicOn) ? 0 : -80;
@@ -21,7 +19,11 @@ public class SoundManager : MonoBehaviour
 		}
 	}
 
-		
+	private void Awake()
+	{
+		instance = this;
+	}
+
 	private SoundManager()
 	{
 
@@ -29,14 +31,7 @@ public class SoundManager : MonoBehaviour
 
 	private void Start()
 	{
-		if (instance == null)
-		{
-			instance = this;
-			_currentState = PlayerPrefs.GetInt("Music", 0) == 0 ? SoundState.MusicOn : SoundState.MusicOff;
-			DontDestroyOnLoad(this);
-		}
-		else
-			Destroy(this);
+		_currentState = PlayerPrefs.GetInt("Music", 0) == 0 ? SoundState.MusicOn : SoundState.MusicOff;
 	}
 
 	public void UpdateSoundState(SoundState newState)

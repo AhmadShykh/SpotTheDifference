@@ -26,7 +26,6 @@ public class ColorDifferenceScript : MonoBehaviour
 
 	private int _shownImgCount = 0;
 	private int _maxDiffCount = 8;
-	private int _currentDiffCount = 3;
 	private int _incDiffAfterImgCount = 10;
 	private int _diffRadiusPer = 5;
 
@@ -40,7 +39,7 @@ public class ColorDifferenceScript : MonoBehaviour
 
 	private bool _differenceClicked;
 	private int _differenceRadius;
-	private int _imagesShown;
+	private int _currentDiffCount;
 
 	private void Awake()
 	{
@@ -54,7 +53,10 @@ public class ColorDifferenceScript : MonoBehaviour
 	private void MainScreenSequence(State state)
 	{
 		if (state == State.MainScreen)
-			_imagesShown = _showBannerAfter;
+		{
+			_currentDiffCount = 3;
+			_shownImgCount = 0;
+		}
 	}
 
 	private void OnDestroy()
@@ -86,6 +88,7 @@ public class ColorDifferenceScript : MonoBehaviour
 					
 					if (_diffCenterPoints.Count <= 0)
 						GameManager.instance.UpdateGameState(State.GameScreen);
+					Scoring._score += 1;
 					_differenceClicked = false;
 					return;
 
@@ -137,7 +140,9 @@ public class ColorDifferenceScript : MonoBehaviour
 	{
 		if(state == State.GameScreen)
 		{
-			_imagesShown++;
+			_tries = 0;
+			_shownImgCount++;
+
 			if(originalImage.sprite != null)
 				Destroy(originalImage.sprite.texture);
 			if (differenceImage.sprite != null)
@@ -151,11 +156,8 @@ public class ColorDifferenceScript : MonoBehaviour
 			SelectRandomPicture();
 			ImageDifferenceCreator();
 
-
-
-			if (_imagesShown % 4 == 0)
+			if (_shownImgCount % _showBannerAfter == 0)
 				GameManager.instance.ShowBanner();
-
 		}
 	}
 	private void SelectRandomPicture()
@@ -191,6 +193,7 @@ public class ColorDifferenceScript : MonoBehaviour
 
 		// Calculating Difference based on the texture width
 		_differenceRadius = (_diffRadiusPer * textureWidth) / 100;
+
 
 
 		_currentDiffCount += _shownImgCount / _incDiffAfterImgCount;
