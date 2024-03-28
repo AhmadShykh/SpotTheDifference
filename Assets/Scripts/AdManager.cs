@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System;
 using GoogleMobileAds.Api;
-using UnityEditor;
 public class AdManager : MonoBehaviour
 {
     // Currently not used in the script 

@@ -1,15 +1,11 @@
 using JetBrains.Annotations;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using System.Threading.Tasks;
-using UnityEditor.Search;
-using UnityEditor.Tilemaps;
-using Unity.VisualScripting;
+using UnityEngine.Purchasing.Security;
 
 
 public class CanvasController : MonoBehaviour
@@ -33,6 +29,7 @@ public class CanvasController : MonoBehaviour
 	[SerializeField] Button BackButton;
 	[SerializeField] Button HintButton;
 	[SerializeField] Button SoundButton;
+	[SerializeField] Button QuitButton;
 
 	[Header("Labels")]
 	[SerializeField] TextMeshProUGUI HintLabel;
@@ -59,12 +56,14 @@ public class CanvasController : MonoBehaviour
 		//Setting Events and listeners
 		PlayButton.onClick.AddListener(() => GameScreenBtnEvents(State.GameScreen));
 		BackButton.onClick.AddListener(() => GameScreenBtnEvents(State.MainScreen));
+		QuitButton.onClick.AddListener(QuitApplication);
 		SoundButton.onClick.AddListener(ToggleSound);
 		HintButton.onClick.AddListener(HintButtonSequence);
 		GameManager.OnStateChangeAction += SwitchCanvas;
-
-		
 	}
+
+	private void QuitApplication() => Application.Quit();
+
 	private void OnDestroy()
 	{
 		GameManager.OnStateChangeAction -= SwitchCanvas;

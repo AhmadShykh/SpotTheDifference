@@ -1,16 +1,15 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
-using System.Security.Cryptography;
-using static UnityEngine.EventSystems.EventTrigger;
-using JetBrains.Annotations;
 using System.Threading.Tasks;
-using UnityEditor.Tilemaps;
-using System.Net.NetworkInformation;
+using System.Linq;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
+using System.Security.Cryptography;
+using Unity.VisualScripting;
+
 
 public class ColorDifferenceScript : MonoBehaviour
 {
@@ -18,7 +17,7 @@ public class ColorDifferenceScript : MonoBehaviour
 	[Header("Images Settings")]
 	[SerializeField] Image originalImage;
 	[SerializeField] Image differenceImage;
-
+	[SerializeField] AssetLabelReference _assetsLabelReference;
 
 	private Button _diffBtn;
 	
@@ -40,6 +39,13 @@ public class ColorDifferenceScript : MonoBehaviour
 	private bool _differenceClicked;
 	private int _differenceRadius;
 	private int _currentDiffCount;
+
+	// Addressables data
+	IList<IResourceLocation> files;
+
+	//Experiment 
+
+
 
 	private void Awake()
 	{
@@ -69,6 +75,23 @@ public class ColorDifferenceScript : MonoBehaviour
 		_folderPath = "D:\\Unity Projects\\SpotTheDifference\\Assets\\Images\\All Images";
 		_differenceClicked = false;
 
+		LoadAllImagesLocations();
+
+	}
+	private void LoadAllImagesLocations()
+	{
+		AsyncOperationHandle<IList<IResourceLocation>> locationsHandler = Addressables.LoadResourceLocationsAsync(_assetsLabelReference);
+		locationsHandler.WaitForCompletion();
+
+		if (locationsHandler.Status == AsyncOperationStatus.Succeeded)
+			files = locationsHandler.Result;
+		else
+			Debug.LogError("Could not load addressable");
+
+		Addressables.Release(locationsHandler);
+
+		// Unloading all unused item
+		Resources.UnloadUnusedAssets();
 	}
 	private async void DiffBtnClickSequence()
 	{
@@ -105,7 +128,6 @@ public class ColorDifferenceScript : MonoBehaviour
 		}
 		else
 			_tries++;
-		
 	}
 	Vector2 MouseWorldPosToDiffImgPos(Vector2 pixelClickedPos)
 	{
@@ -158,48 +180,68 @@ public class ColorDifferenceScript : MonoBehaviour
 
 			if (_shownImgCount % _showBannerAfter == 0)
 				GameManager.instance.ShowBanner();
+
+			// Unloading all unused item
+			Resources.UnloadUnusedAssets();
 		}
 	}
 	private void SelectRandomPicture()
 	{
-		if (Directory.Exists(_folderPath))
-		{
-			// Taking The image
-			string[] files = Directory.GetFiles(_folderPath,"*.jpg");
-			byte[] fileBytes = File.ReadAllBytes(files[Random.Range(0, files.Length-1)]);
+		IResourceLocation fileResource = files[Random.Range(0,files.Count)];
+		AsyncOperationHandle<Texture2D> textureAsync = Addressables.LoadAssetAsync<Texture2D>(fileResource.PrimaryKey);
+		textureAsync.WaitForCompletion();
+		Texture2D imageTexture = textureAsync.Result;
 			
-			// Applying it to a new texture
-			Texture2D originalTexture = new Texture2D(2, 2);
-			Texture2D differenceTexture = new Texture2D(2, 2);
-			originalTexture.LoadImage(fileBytes);
-			differenceTexture.LoadImage(fileBytes);
+		//AddFileToLibrary(filePath);
+
+
+		// Applying it to a new texture
+		Texture2D originalTexture = Instantiate(imageTexture) as Texture2D;
+		Texture2D differenceTexture = Instantiate(imageTexture) as Texture2D;
+
+		// Creating Sprites from those Texture
+		Sprite orgImgSprite = Sprite.Create(originalTexture, new Rect(0, 0, originalTexture.width, originalTexture.height), Vector2.one * 0.5f);
+		Sprite diffImgSprite = Sprite.Create(differenceTexture, new Rect(0, 0, differenceTexture.width, differenceTexture.height), Vector2.one * 0.5f);
 			
-			// Creating Sprites from those Texture
-			Sprite orgImgSprite = Sprite.Create(originalTexture, new Rect(0, 0, originalTexture.width, originalTexture.height), Vector2.one * 0.5f);
-			Sprite diffImgSprite = Sprite.Create(differenceTexture, new Rect(0, 0, differenceTexture.width, differenceTexture.height), Vector2.one * 0.5f);
+		originalImage.sprite = orgImgSprite;
+		differenceImage.sprite = diffImgSprite;
 
-			originalImage.sprite = orgImgSprite;
-			differenceImage.sprite = diffImgSprite;
-
-		}
-		else
-			Debug.LogError("Path Does Not Exists");
+		Addressables.Release(textureAsync);
+		
 	}
+
+	private void AddFileToLibrary(string filePath)
+	{
+		string libraryFiles = PlayerPrefs.GetString("Library", "");
+		if(libraryFiles != "")
+		{
+			string fileName = Path.GetFileName(filePath);
+			string[] allFiles = libraryFiles.Split(';');
+			if(!allFiles.Contains(fileName))
+				PlayerPrefs.SetString("Library",libraryFiles + ";" + fileName);
+		}
+	}
+
+
+
 	void ImageDifferenceCreator()
 	{
 		
-		int textureWidth = originalImage.sprite.texture.width, textureHeight = originalImage.sprite.texture.height;
-		Color[] pixels = originalImage.sprite.texture.GetPixels();
+		int textureWidth = differenceImage.sprite.texture.width, textureHeight = differenceImage.sprite.texture.height;
+
+		Color[] pixels = differenceImage.sprite.texture.GetPixels();
+
+
+
 
 		// Calculating Difference based on the texture width
 		_differenceRadius = (_diffRadiusPer * textureWidth) / 100;
 
 
-
 		_currentDiffCount += _shownImgCount / _incDiffAfterImgCount;
 		_currentDiffCount = _currentDiffCount <= _maxDiffCount ? _currentDiffCount : _maxDiffCount;
 
-		for (int j = 0; j< _currentDiffCount; j++)
+		for (int j = 0; j < _currentDiffCount; j++)
 		{
 			// Randomly select a center point within the image bounds
 			int centerX = Random.Range(_differenceRadius, textureWidth - _differenceRadius);
@@ -236,8 +278,8 @@ public class ColorDifferenceScript : MonoBehaviour
 				ExecuteMatrixFillInParellel(orgStrX, orgEndX, diffStrX, pixels, textureWidth, centerX, centerY, diffCenterY);
 			}
 		}
-		
-		differenceImage.sprite.texture.SetPixels(pixels);
+
+		differenceImage.sprite.texture.SetPixels(pixels);// = diffImgSprite;
 		// Apply changes to the modified image
 		differenceImage.sprite.texture.Apply();
 	}
