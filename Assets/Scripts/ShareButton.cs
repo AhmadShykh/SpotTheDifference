@@ -39,9 +39,9 @@ public class ShareButton : MonoBehaviour
 
     public IEnumerator ShareTextInAnroid()
     {
-        var shareSubject = "Play POP IT on your phone"; //Subject text
-        var shareMessage = "Get POP IT game from this link: " + //Message text
-                           "https://play.google.com/store/apps/"; //Your link
+        var shareSubject = "Play Spot the Difference on your phone"; //Subject text
+        var shareMessage = "Get Spot the Difference game from this link: " + //Message text
+						   "https://www.linkedin.com/in/ahmad-ali-b781a21a5/"; //Your link
 
         isProcessing = true;
 

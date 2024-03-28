@@ -1,11 +1,9 @@
-using JetBrains.Annotations;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using System.Threading.Tasks;
-using UnityEngine.Purchasing.Security;
 
 
 public class CanvasController : MonoBehaviour

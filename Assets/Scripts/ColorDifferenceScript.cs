@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
-using System.Security.Cryptography;
 using Unity.VisualScripting;
 
 
@@ -192,7 +190,7 @@ public class ColorDifferenceScript : MonoBehaviour
 		textureAsync.WaitForCompletion();
 		Texture2D imageTexture = textureAsync.Result;
 			
-		//AddFileToLibrary(filePath);
+		AddFileToLibrary(fileResource.PrimaryKey);
 
 
 		// Applying it to a new texture
@@ -213,13 +211,11 @@ public class ColorDifferenceScript : MonoBehaviour
 	private void AddFileToLibrary(string filePath)
 	{
 		string libraryFiles = PlayerPrefs.GetString("Library", "");
-		if(libraryFiles != "")
-		{
-			string fileName = Path.GetFileName(filePath);
-			string[] allFiles = libraryFiles.Split(';');
-			if(!allFiles.Contains(fileName))
-				PlayerPrefs.SetString("Library",libraryFiles + ";" + fileName);
-		}
+		string[] allFiles = libraryFiles.Split(';');
+		if (libraryFiles == "")
+			PlayerPrefs.SetString("Library", filePath);
+		else if (!allFiles.Contains(filePath))
+			PlayerPrefs.SetString("Library", libraryFiles+";"+filePath);
 	}
 
 
