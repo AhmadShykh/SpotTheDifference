@@ -1,0 +1,295 @@
+{
+  "differences": [
+    {
+      "name": 1,
+      "difference": [
+        {
+          "x_percent": 26.666666666666668,
+          "y_percent": 75.83333333333333,
+          "width_percent": 10.333333333333334,
+          "height_percent": 20.27777777777778
+        },
+        {
+          "x_percent": 41.5,
+          "y_percent": 62.5,
+          "width_percent": 9.166666666666666,
+          "height_percent": 15.0
+        },
+        {
+          "x_percent": 47.66666666666667,
+          "y_percent": 11.666666666666666,
+          "width_percent": 8.333333333333332,
+          "height_percent": 13.055555555555557
+        }
+      ]
+    },
+    {
+      "name": 100,
+      "difference": [
+        {
+          "x_percent": 54.666666666666664,
+          "y_percent": 87.77777777777777,
+          "width_percent": 10.166666666666666,
+          "height_percent": 12.222222222222221
+        },
+        {
+          "x_percent": 46.666666666666664,
+          "y_percent": 66.11111111111111,
+          "width_percent": 8.833333333333334,
+          "height_percent": 13.055555555555557
+        },
+        {
+          "x_percent": 56.333333333333336,
+          "y_percent": 65.0,
+          "width_percent": 19.666666666666664,
+          "height_percent": 23.333333333333332
+        },
+        {
+          "x_percent": 23.0,
+          "y_percent": 20.0,
+          "width_percent": 17.5,
+          "height_percent": 31.38888888888889
+        }
+      ]
+    },
+    {
+      "name": 103,
+      "difference": [
+        {
+          "x_percent": 86.5,
+          "y_percent": 85.27777777777777,
+          "width_percent": 13.333333333333334,
+          "height_percent": 14.722222222222223
+        },
+        {
+          "x_percent": 58.333333333333336,
+          "y_percent": 49.44444444444444,
+          "width_percent": 26.666666666666668,
+          "height_percent": 33.88888888888889
+        },
+        {
+          "x_percent": 44.83333333333333,
+          "y_percent": 43.888888888888886,
+          "width_percent": 8.333333333333332,
+          "height_percent": 9.444444444444445
+        },
+        {
+          "x_percent": 13.5,
+          "y_percent": 29.72222222222222,
+          "width_percent": 8.5,
+          "height_percent": 12.777777777777777
+        }
+      ]
+    },
+    {
+      "name": 104,
+      "difference": [
+        {
+          "x_percent": 84.5,
+          "y_percent": 78.33333333333333,
+          "width_percent": 14.166666666666666,
+          "height_percent": 11.11111111111111
+        },
+        {
+          "x_percent": 44.83333333333333,
+          "y_percent": 60.83333333333333,
+          "width_percent": 13.833333333333334,
+          "height_percent": 11.666666666666666
+        },
+        {
+          "x_percent": 65.83333333333333,
+          "y_percent": 59.166666666666664,
+          "width_percent": 15.666666666666668,
+          "height_percent": 15.277777777777779
+        },
+        {
+          "x_percent": 22.666666666666664,
+          "y_percent": 7.5,
+          "width_percent": 61.16666666666667,
+          "height_percent": 31.944444444444443
+        }
+      ]
+    },
+    {
+      "name": 106,
+      "difference": [
+        {
+          "x_percent": 75.33333333333333,
+          "y_percent": 59.44444444444444,
+          "width_percent": 10.0,
+          "height_percent": 16.666666666666664
+        },
+        {
+          "x_percent": 38.83333333333333,
+          "y_percent": 55.00000000000001,
+          "width_percent": 12.833333333333332,
+          "height_percent": 18.61111111111111
+        },
+        {
+          "x_percent": 86.0,
+          "y_percent": 41.388888888888886,
+          "width_percent": 13.0,
+          "height_percent": 19.166666666666668
+        },
+        {
+          "x_percent": 53.166666666666664,
+          "y_percent": 36.666666666666664,
+          "width_percent": 6.833333333333333,
+          "height_percent": 25.833333333333336
+        },
+        {
+          "x_percent": 77.33333333333333,
+          "y_percent": 20.27777777777778,
+          "width_percent": 10.666666666666668,
+          "height_percent": 11.666666666666666
+        },
+        {
+          "x_percent": 82.33333333333334,
+          "y_percent": 0.0,
+          "width_percent": 13.666666666666666,
+          "height_percent": 12.5
+        }
+      ]
+    },
+    {
+      "name": 107,
+      "difference": [
+        {
+          "x_percent": 49.333333333333336,
+          "y_percent": 63.61111111111111,
+          "width_percent": 10.666666666666668,
+          "height_percent": 13.055555555555557
+        },
+        {
+          "x_percent": 43.166666666666664,
+          "y_percent": 50.0,
+          "width_percent": 5.0,
+          "height_percent": 17.5
+        },
+        {
+          "x_percent": 73.66666666666667,
+          "y_percent": 43.888888888888886,
+          "width_percent": 6.0,
+          "height_percent": 22.5
+        },
+        {
+          "x_percent": 83.5,
+          "y_percent": 32.22222222222222,
+          "width_percent": 6.333333333333334,
+          "height_percent": 16.38888888888889
+        },
+        {
+          "x_percent": 16.5,
+          "y_percent": 30.833333333333336,
+          "width_percent": 9.166666666666666,
+          "height_percent": 11.11111111111111
+        },
+        {
+          "x_percent": 28.166666666666668,
+          "y_percent": 0.0,
+          "width_percent": 8.833333333333334,
+          "height_percent": 13.055555555555557
+        }
+      ]
+    },
+    {
+      "name": 109,
+      "difference": [
+        {
+          "x_percent": 34.0,
+          "y_percent": 86.11111111111111,
+          "width_percent": 33.0,
+          "height_percent": 13.88888888888889
+        },
+        {
+          "x_percent": 2.833333333333333,
+          "y_percent": 66.38888888888889,
+          "width_percent": 10.833333333333334,
+          "height_percent": 13.88888888888889
+        },
+        {
+          "x_percent": 87.5,
+          "y_percent": 49.72222222222222,
+          "width_percent": 11.0,
+          "height_percent": 16.666666666666664
+        },
+        {
+          "x_percent": 41.833333333333336,
+          "y_percent": 11.944444444444445,
+          "width_percent": 7.166666666666667,
+          "height_percent": 18.333333333333332
+        }
+      ]
+    },
+    {
+      "name": 11,
+      "difference": [
+        {
+          "x_percent": 40.33333333333333,
+          "y_percent": 71.11111111111111,
+          "width_percent": 15.666666666666668,
+          "height_percent": 18.88888888888889
+        },
+        {
+          "x_percent": 74.33333333333333,
+          "y_percent": 58.333333333333336,
+          "width_percent": 7.833333333333334,
+          "height_percent": 13.61111111111111
+        },
+        {
+          "x_percent": 55.00000000000001,
+          "y_percent": 10.555555555555555,
+          "width_percent": 11.333333333333332,
+          "height_percent": 15.0
+        },
+        {
+          "x_percent": 75.33333333333333,
+          "y_percent": 10.277777777777777,
+          "width_percent": 7.000000000000001,
+          "height_percent": 10.555555555555555
+        },
+        {
+          "x_percent": 37.166666666666664,
+          "y_percent": 9.166666666666666,
+          "width_percent": 4.666666666666667,
+          "height_percent": 14.722222222222223
+        }
+      ]
+    },
+    {
+      "name": 110,
+      "difference": [
+        {
+          "x_percent": 5.5,
+          "y_percent": 73.05555555555556,
+          "width_percent": 15.666666666666668,
+          "height_percent": 26.944444444444443
+        },
+        {
+          "x_percent": 90.16666666666666,
+          "y_percent": 55.833333333333336,
+          "width_percent": 9.833333333333332,
+          "height_percent": 21.944444444444443
+        },
+        {
+          "x_percent": 69.66666666666667,
+          "y_percent": 55.00000000000001,
+          "width_percent": 15.333333333333332,
+          "height_percent": 41.11111111111111
+        },
+        {
+          "x_percent": 9.333333333333334,
+          "y_percent": 34.72222222222222,
+          "width_percent": 12.0,
+          "height_percent": 20.0
+        },
+        {
+          "x_percent": 58.5,
+          "y_percent": 0.0,
+          "width_percent": 10.166666666666666,
+          "height_percent": 17.22222222222222
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using System.Threading.Tasks;
+using UnityEditor.Timeline.Actions;
 
 
 public class CanvasController : MonoBehaviour
@@ -68,8 +69,10 @@ public class CanvasController : MonoBehaviour
 	}
 	private void Start()
 	{
-		// Setting Default Positions
+		// Setting Default Options
 		GameCanvas.transform.position = new Vector3(_gameCanvasOffset, GameCanvas.transform.position.y);
+		MainCanvas.SetActive(true);
+
 		//Other Tasks
 		icon.sprite = PlayerPrefs.GetInt("Music") == 0 ? MusicIcon[0] : MusicIcon[1];
 	}
@@ -111,7 +114,9 @@ public class CanvasController : MonoBehaviour
 		}	
 		else
 		{
+			Debug.Log($"Print Avalaible: {_hintsAvalaible}");
 			_hintsAvalaible--;
+
 			PlayerPrefs.SetInt("Hints", _hintsAvalaible);
 			obj = _colorDiffScript.InitiateHintSequence(HintPrefab);
 			await Task.Delay(_maxShowHintTime*1000);
@@ -123,7 +128,12 @@ public class CanvasController : MonoBehaviour
 
 	private void GameScreenBtnEvents(State state)
 	{
-		GameManager.instance.UpdateGameState(state);
+		bool acceptClick = true;
+
+		if(state.Equals(State.GameScreen) && GameManager.instance._currentState.Equals(State.GameScreen)) { acceptClick = false; }
+
+		if(acceptClick)
+			GameManager.instance.UpdateGameState(state);
 	}
 
 	public void ToggleOptionsCanva() => OptionsCanvas.SetActive(!OptionsCanvas.activeSelf);
@@ -134,8 +144,6 @@ public class CanvasController : MonoBehaviour
 		icon.sprite = currentState == 0 ? MusicIcon[1] : MusicIcon[0];
 		SoundManager.instance.UpdateSoundState((SoundState)(((int)currentState) ^ 1));
 	}
-
-
 
 	async Task HintTextAnimation()
 	{

@@ -17,8 +17,8 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 3c49c2093f27e3e4897ce8e8a607d055
   m_SerializeEntries:
-  - m_GUID: b617900de114a304da697cb04ae244cd
-    m_Address: Assets/Images/All Images
+  - m_GUID: 1bc3436d87d199540be3b7a127ad9ac9
+    m_Address: Assets/Images/Images
     m_ReadOnly: 0
     m_SerializedLabels:
     - Images
