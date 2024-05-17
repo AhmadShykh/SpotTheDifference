@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using UnityEngine.Purchasing.Extension;
 using JetBrains.Annotations;
 using GoogleMobileAds.Ump.Api;
+using System;
+using TMPro;
 
 
 [System.Serializable]
@@ -52,7 +54,17 @@ public class ColorDifferenceScript : MonoBehaviour
 
 	[Header("Differences Settings")]
 	[SerializeField] TextAsset _optionsFile;
+	[SerializeField] TextMeshProUGUI _triesText;
+	[SerializeField] TextMeshProUGUI _differenceText;
+	[SerializeField] GameObject _differenceSquare;
 
+	private List<GameObject> _differenceSquareList;
+
+	[Header("Audio Settings")]
+	[SerializeField] AudioSource _soundEffectAudioSource;
+	[SerializeField] AudioClip _correctSound;
+	[SerializeField] AudioClip _wrongSound;
+	
 
 	private Button _diffBtn;
 
@@ -72,8 +84,9 @@ public class ColorDifferenceScript : MonoBehaviour
 	//private int _differenceValue = 500;
 
 	private bool _differenceClicked;
+	private int _diffClickCount;
 	//private int _differenceRadius;
-	private int _currentDiffCount;
+	//private int _currentDiffCount;
 
 	// Addressables data
 	//IList<IResourceLocation> files;
@@ -95,7 +108,7 @@ public class ColorDifferenceScript : MonoBehaviour
 	{
 		if (state == State.MainScreen)
 		{
-			_currentDiffCount = 3;
+			//_currentDiffCount = 3;
 			_shownImgCount = 0;
 		}
 	}
@@ -108,6 +121,7 @@ public class ColorDifferenceScript : MonoBehaviour
 	{
 		// Initial Variable Set Values
 		//_folderPath = "D:\\Unity Projects\\SpotTheDifference\\Assets\\Images\\All Images";
+		_differenceSquareList = new List<GameObject>();
 		_differenceClicked = false;
 
 		//LoadAllImagesLocations();
@@ -128,7 +142,7 @@ public class ColorDifferenceScript : MonoBehaviour
 	//	// Unloading all unused item
 	//	Resources.UnloadUnusedAssets();
 	//}
-	private async void DiffBtnClickSequence()
+	private void DiffBtnClickSequence()
 	{
 		if (!_differenceClicked)
 		{
@@ -139,32 +153,56 @@ public class ColorDifferenceScript : MonoBehaviour
 
 			for (int i = 0; i < _selImgDifferences.difference.Length; i++)
 			{
-				Difference pointPercent = _selImgDifferences.difference[i];
+				Difference pointPercents = _selImgDifferences.difference[i];
 
 				float width = differenceImage.sprite.texture.width/(float)100.0;
 				float height = differenceImage.sprite.texture.height/(float)100.0;
 
-				Vector2 sqPoint = new Vector2(pointPercent.x_percent * width, pointPercent.y_percent * height);
-				Vector2 perimeter = new Vector2(pointPercent.width_percent * width ,pointPercent.height_percent * height);
+				
+				Vector2 sqPoint = new Vector2(pointPercents.x_percent * width, pointPercents.y_percent * height);
+				Vector2 perimeter = new Vector2(pointPercents.width_percent * width ,pointPercents.height_percent * height);
 
-				pixelClickedPos = pixelClickedPos.Abs();
+				pixelClickedPos = new Vector2(MathF.Abs(pixelClickedPos.x), MathF.Abs(pixelClickedPos.y));
 
 				if (PointWithinCircle(pixelClickedPos, sqPoint, perimeter))
 				{
 					Debug.Log($"Difference Clicked: {sqPoint} {pixelClickedPos}");
+
+					Vector2 percentPoint = new Vector2(pointPercents.x_percent, pointPercents.y_percent);
+					Vector2 percentPerimeter = new Vector2(pointPercents.width_percent, pointPercents.height_percent);
+
+
+					_soundEffectAudioSource.clip = _correctSound;
+					_soundEffectAudioSource.Play();
+
+					Vector2 imageSize = new Vector2(differenceImage.rectTransform.rect.width, differenceImage.rectTransform.rect.height);
+
+					Vector2 diffSqPoint = DiffImgPosToLocalPos(percentPoint, percentPerimeter, imageSize);
+
+					GameObject diffObj = Instantiate(_differenceSquare, differenceImage.transform);
+					diffObj.transform.localPosition = diffSqPoint;
+					RectTransform diffSqRect = diffObj.GetComponent<RectTransform>();
+					Vector2 newSize = new Vector2(percentPerimeter.x * imageSize.x / 100f, percentPerimeter.y * imageSize.y / 100f);
+					diffSqRect.sizeDelta = newSize;
 					
+					_differenceSquareList.Add(diffObj);
+
 					List<Difference> diffList = new List<Difference>(_selImgDifferences.difference);
 					diffList.RemoveAt(i);
 					_selImgDifferences.difference = diffList.ToArray();
 
-					if (_selImgDifferences.difference.Length <= 0)
-						GameManager.instance.UpdateGameState(State.GameScreen);
 					Scoring._score += 1;
 
+					_diffClickCount--;
+					_differenceText.text = _diffClickCount.ToString();
 
 					//removeDiffFromImg(sqPoint, perimeter);
 
 					_differenceClicked = false;
+
+					if (_selImgDifferences.difference.Length <= 0)
+						GameManager.instance.UpdateGameState(State.GameScreen);
+
 					return;
 				}
 			}
@@ -173,13 +211,28 @@ public class ColorDifferenceScript : MonoBehaviour
 
 		}
 
-		if (_tries >= _maxTriesCount)
+		_soundEffectAudioSource.clip = _wrongSound;
+		_soundEffectAudioSource.Play();
+
+		_tries--;
+		_triesText.text = _tries.ToString();
+
+		if(_tries <=0 )
 		{
-			_tries = 0;
+			_tries = _maxTriesCount;
 			GameManager.instance.UpdateGameState(State.InterstitialAd);
+			GameManager.instance.UpdateGameState(State.MainScreen); 
 		}
-		else
-			_tries++;
+
+	}
+
+	void DestroyDiffSquares()
+	{
+		foreach(GameObject obj in _differenceSquareList)
+		{
+			Destroy(obj);
+		}
+		_differenceSquareList.Clear();
 	}
 
 	private void removeDiffFromImg(Vector2 sqPoint, Vector2 perimeter)
@@ -240,8 +293,9 @@ public class ColorDifferenceScript : MonoBehaviour
 
 		if (state == State.GameScreen)
 		{
-
-			_tries = 0;
+			DestroyDiffSquares();
+			_tries = _maxTriesCount;
+			_triesText.text = _tries.ToString();
 			_shownImgCount++;
 
 			if (originalImage.sprite != null)
@@ -258,6 +312,9 @@ public class ColorDifferenceScript : MonoBehaviour
 			//SelectRandomPicture();
 			//ImageDifferenceCreator();
 
+			_diffClickCount = _selImgDifferences.difference.Length;
+			_differenceText.text = _diffClickCount.ToString();
+
 			if (_shownImgCount % _showBannerAfter == 0)
 				GameManager.instance.ShowBanner();
 
@@ -268,13 +325,19 @@ public class ColorDifferenceScript : MonoBehaviour
 	private void diffImgSelector()
 	{
 		DifferenceImages differenceImages = JsonUtility.FromJson<DifferenceImages>(_optionsFile.text);
-		_selImgDifferences = differenceImages.differences[Random.Range(0, differenceImages.differences.Length)];
+		_selImgDifferences = differenceImages.differences[UnityEngine.Random.Range(0, differenceImages.differences.Length)];
 
 		Debug.Log("Image Name: "+ _selImgDifferences.name);
 
+		string origImgPath = "Assets/Images/Images/Orig/" + _selImgDifferences.name + ".jpg";
+
 		// Search for the asset by name synchronously
-		Texture2D origTexture = Addressables.LoadAssetAsync<Texture2D>("Assets/Images/Images/Orig/" + _selImgDifferences.name + ".jpg").WaitForCompletion();
+		Texture2D origTexture = Addressables.LoadAssetAsync<Texture2D>(origImgPath).WaitForCompletion();
 		Texture2D diffTexture = Addressables.LoadAssetAsync<Texture2D>("Assets/Images/Images/Diff/" + _selImgDifferences.name + " diff.jpg").WaitForCompletion();
+
+		AddFileToLibrary(origImgPath);
+
+
 
 		// Applying it to a new texture
 		Texture2D originalTexture = Instantiate(origTexture) as Texture2D;
@@ -436,7 +499,14 @@ public class ColorDifferenceScript : MonoBehaviour
 		Vector2 pointPercent = new Vector2(_selImgDifferences.difference[0].x_percent, _selImgDifferences.difference[0].y_percent);
 		Vector2 perimeterPercent = new Vector2(_selImgDifferences.difference[0].width_percent, _selImgDifferences.difference[0].height_percent);
 
-		Vector2 hintPoint = DiffImgPosToLocalPos(pointPercent,perimeterPercent);
+		Vector2 imageSize = new Vector2(differenceImage.rectTransform.rect.width, differenceImage.rectTransform.rect.height);
+
+		Vector2 hintPoint = DiffImgPosToLocalPos(pointPercent,perimeterPercent,imageSize);
+
+		// Calculate the local position
+		hintPoint.x += ((perimeterPercent.x / 200f) * imageSize.x);
+		hintPoint.y -= ((perimeterPercent.y / 200f) * imageSize.y);
+
 		Debug.Log($"Hint Point: {hintPoint} Diff Point: {pointPercent}");
 		
 		GameObject hintObj = Instantiate(hintPrefab, differenceImage.transform);
@@ -448,18 +518,14 @@ public class ColorDifferenceScript : MonoBehaviour
 	}
 
 	// Function to convert pixel coordinates to local position of differenceImage
-	private Vector2 DiffImgPosToLocalPos(Vector2 pixelCoordinates,Vector2 perimeterCoordinates)
+	private Vector2 DiffImgPosToLocalPos(Vector2 pixelCoordinates,Vector2 perimeterCoordinates,Vector2 imageSize)
 	{
-		// Get the RectTransform component of differenceImage
-		RectTransform rectTransform = differenceImage.GetComponent<RectTransform>();
-
 		// Get the size of the differenceImage in pixels
-		Vector2 imageSize = new Vector2(rectTransform.rect.width, rectTransform.rect.height);
-
+		
 		// Calculate the local position
 		Vector2 localPosition = new Vector2(
-			(pixelCoordinates.x / 100f) * imageSize.x + ((perimeterCoordinates.x/200f)*imageSize.x),
-			-(pixelCoordinates.y / 100f) * imageSize.y - ((perimeterCoordinates.y / 200f) * imageSize.y)
+			(pixelCoordinates.x / 100f) * imageSize.x ,
+			-(pixelCoordinates.y / 100f) * imageSize.y 
 		);
 
 		return localPosition;

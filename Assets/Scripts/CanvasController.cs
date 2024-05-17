@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using System.Threading.Tasks;
-using UnityEditor.Timeline.Actions;
 
 
 public class CanvasController : MonoBehaviour
@@ -153,3 +152,6 @@ public class CanvasController : MonoBehaviour
 	}
 
 }
+
+
+

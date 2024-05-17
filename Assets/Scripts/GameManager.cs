@@ -42,12 +42,6 @@ public class GameManager : MonoBehaviour
 		_currentState = newState;
 		switch (newState)
 		{
-			case State.MainScreen:
-				StartMainScreenSequnence();
-				break;
-			case State.GameScreen:
-				StartGameScreenSequnence();
-				break;
 			case State.InterstitialAd:
 				StartInterstitialAdSequence();
 				break;
@@ -62,15 +56,7 @@ public class GameManager : MonoBehaviour
 		_adManager.ShowInterstitialAd();
 	}
 
-	private void StartMainScreenSequnence()
-	{
-		
-	}
 
-	private void StartGameScreenSequnence()
-	{
-		
-	}
 
 	public void ShowBanner()
 	{

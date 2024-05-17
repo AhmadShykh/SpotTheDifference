@@ -69,7 +69,7 @@ public class CircleClouringScript : MonoBehaviour, IPointerClickHandler
 		// Filter files containing "solut" in their names and exclude ".meta" files
 		solutFiles = Array.FindAll(files, name => name.Contains("solut") && !name.EndsWith(".meta"));
 		Array.Sort(solutFiles, (x, y) => GetNumericValue(x).CompareTo(GetNumericValue(y)));
-
+		
 		byte[] fileData = File.ReadAllBytes(solutFiles[index]);
 		Texture2D texture = new Texture2D(2, 2); // Modify texture size as needed
 		if (texture.LoadImage(fileData))
