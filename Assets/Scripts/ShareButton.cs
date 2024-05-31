@@ -41,7 +41,7 @@ public class ShareButton : MonoBehaviour
     {
         var shareSubject = "Play Spot the Difference on your phone"; //Subject text
         var shareMessage = "Get your copy now on Google Play from Ning Games: " + //Message text
-						   "https://www.linkedin.com/in/ahmad-ali-b781a21a5/"; //Your link
+						   ""; //Your link
 
         isProcessing = true;
 

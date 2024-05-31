@@ -184,7 +184,7 @@ public class ColorDifferenceScript : MonoBehaviour
 					RectTransform diffSqRect = diffObj.GetComponent<RectTransform>();
 					Vector2 newSize = new Vector2(percentPerimeter.x * imageSize.x / 100f, percentPerimeter.y * imageSize.y / 100f);
 					diffSqRect.sizeDelta = newSize;
-					
+
 					_differenceSquareList.Add(diffObj);
 
 					List<Difference> diffList = new List<Difference>(_selImgDifferences.difference);
@@ -201,7 +201,10 @@ public class ColorDifferenceScript : MonoBehaviour
 					_differenceClicked = false;
 
 					if (_selImgDifferences.difference.Length <= 0)
-						GameManager.instance.UpdateGameState(State.GameScreen);
+					{
+						_diffBtn.interactable = false;
+						SpawnNewImg();
+					}
 
 					return;
 				}
@@ -224,6 +227,12 @@ public class ColorDifferenceScript : MonoBehaviour
 			GameManager.instance.UpdateGameState(State.MainScreen); 
 		}
 
+	}
+
+	private async Task SpawnNewImg()
+	{
+		await Task.Delay(1030);
+		GameManager.instance.UpdateGameState(State.GameScreen);
 	}
 
 	void DestroyDiffSquares()
@@ -290,9 +299,10 @@ public class ColorDifferenceScript : MonoBehaviour
 	//}
 	private void StartGameSequence(State state)
 	{
-
+		
 		if (state == State.GameScreen)
 		{
+			_diffBtn.interactable = true;
 			DestroyDiffSquares();
 			_tries = _maxTriesCount;
 			_triesText.text = _tries.ToString();

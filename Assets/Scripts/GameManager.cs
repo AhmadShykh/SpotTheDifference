@@ -38,7 +38,6 @@ public class GameManager : MonoBehaviour
 
 	public void UpdateGameState(State newState)
 	{
-
 		_currentState = newState;
 		switch (newState)
 		{
