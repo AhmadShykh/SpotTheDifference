@@ -16,7 +16,14 @@ public class AdManager : MonoBehaviour
     string interId = "ca-app-pub-3940256099942544/4411468910";
     string rewardedId = "ca-app-pub-3940256099942544/1712485313";
     string nativeId = "ca-app-pub-3940256099942544/3986624511";
+#else
+    string bannerId = "ca-app-pub-1385093244148841/2952458907";
+    string interId = "ca-app-pub-3940256099942544/1033173712";
+    string rewardedId = "ca-app-pub-3940256099942544/5224354917";
+    string nativeId = "ca-app-pub-3940256099942544/2247696110";
 
+        
+        
 #endif
 
     BannerView bannerView;

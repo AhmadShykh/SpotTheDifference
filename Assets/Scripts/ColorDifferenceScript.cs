@@ -4,16 +4,9 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceLocations;
-using Unity.VisualScripting;
-using UnityEngine.Purchasing.MiniJSON;
-using Newtonsoft.Json;
-using UnityEngine.Purchasing.Extension;
-using JetBrains.Annotations;
-using GoogleMobileAds.Ump.Api;
 using System;
 using TMPro;
+using Newtonsoft.Json;
 
 
 [System.Serializable]
@@ -150,7 +143,7 @@ public class ColorDifferenceScript : MonoBehaviour
 			// Getting the Mouse Clicked Position on the image
 			Vector2 pixelClickedPos = MouseWorldPosToDiffImgPos(Input.mousePosition);
 
-
+			Debug.Log(pixelClickedPos);
 			for (int i = 0; i < _selImgDifferences.difference.Length; i++)
 			{
 				Difference pointPercents = _selImgDifferences.difference[i];
@@ -163,7 +156,7 @@ public class ColorDifferenceScript : MonoBehaviour
 				Vector2 perimeter = new Vector2(pointPercents.width_percent * width ,pointPercents.height_percent * height);
 
 				pixelClickedPos = new Vector2(MathF.Abs(pixelClickedPos.x), MathF.Abs(pixelClickedPos.y));
-
+				
 				if (PointWithinCircle(pixelClickedPos, sqPoint, perimeter))
 				{
 					Debug.Log($"Difference Clicked: {sqPoint} {pixelClickedPos}");
@@ -175,17 +168,10 @@ public class ColorDifferenceScript : MonoBehaviour
 					_soundEffectAudioSource.clip = _correctSound;
 					_soundEffectAudioSource.Play();
 
-					Vector2 imageSize = new Vector2(differenceImage.rectTransform.rect.width, differenceImage.rectTransform.rect.height);
-
-					Vector2 diffSqPoint = DiffImgPosToLocalPos(percentPoint, percentPerimeter, imageSize);
-
-					GameObject diffObj = Instantiate(_differenceSquare, differenceImage.transform);
-					diffObj.transform.localPosition = diffSqPoint;
-					RectTransform diffSqRect = diffObj.GetComponent<RectTransform>();
-					Vector2 newSize = new Vector2(percentPerimeter.x * imageSize.x / 100f, percentPerimeter.y * imageSize.y / 100f);
-					diffSqRect.sizeDelta = newSize;
-
-					_differenceSquareList.Add(diffObj);
+					
+					CreateRedCircleOnImage(differenceImage,percentPoint, percentPerimeter);
+					
+					CreateRedCircleOnImage(originalImage,percentPoint, percentPerimeter);
 
 					List<Difference> diffList = new List<Difference>(_selImgDifferences.difference);
 					diffList.RemoveAt(i);
@@ -202,7 +188,10 @@ public class ColorDifferenceScript : MonoBehaviour
 
 					if (_selImgDifferences.difference.Length <= 0)
 					{
+						
 						_diffBtn.interactable = false;
+						
+						PlayerPrefs.SetInt(PlayerPrefsConsts.imageSelector,PlayerPrefs.GetInt(PlayerPrefsConsts.imageSelector,-1)+1);
 						SpawnNewImg();
 					}
 
@@ -227,6 +216,21 @@ public class ColorDifferenceScript : MonoBehaviour
 			GameManager.instance.UpdateGameState(State.MainScreen); 
 		}
 
+	}
+
+	private void CreateRedCircleOnImage(Image image,Vector2 percentPoint, Vector2 percentPerimeter)
+	{
+		Vector2 imageSize = new Vector2(image.rectTransform.rect.width, image.rectTransform.rect.height);
+		Vector2 diffSqPoint = DiffImgPosToLocalPos(percentPoint, percentPerimeter, imageSize);
+					
+                    
+		GameObject diffObj = Instantiate(_differenceSquare, image.transform.parent);
+		diffObj.transform.localPosition = diffSqPoint;
+		RectTransform diffSqRect = diffObj.GetComponent<RectTransform>();
+		Vector2 newSize = new Vector2(percentPerimeter.x * imageSize.x / 100f, percentPerimeter.y * imageSize.y / 100f);
+		diffSqRect.sizeDelta = newSize;
+
+		_differenceSquareList.Add(diffObj);
 	}
 
 	private async Task SpawnNewImg()
@@ -269,11 +273,12 @@ public class ColorDifferenceScript : MonoBehaviour
 
 	Vector2 MouseWorldPosToDiffImgPos(Vector2 pixelClickedPos)
 	{
-		RectTransformUtility.ScreenPointToLocalPointInRectangle(differenceImage.rectTransform, Input.mousePosition, GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>(), out pixelClickedPos);
+		Vector2 point;
+		RectTransformUtility.ScreenPointToLocalPointInRectangle(differenceImage.rectTransform, pixelClickedPos, GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>(), out point);
 
-		pixelClickedPos.x = pixelClickedPos.x * (differenceImage.sprite.texture.width / differenceImage.rectTransform.rect.width);
-		pixelClickedPos.y = pixelClickedPos.y * (differenceImage.sprite.texture.height / differenceImage.rectTransform.rect.height);
-		return pixelClickedPos;
+		point.x = point.x * (differenceImage.sprite.texture.width / differenceImage.rectTransform.rect.width);
+		point.y = point.y * (differenceImage.sprite.texture.height / differenceImage.rectTransform.rect.height);
+		return point;
 	}
 
 
@@ -335,7 +340,17 @@ public class ColorDifferenceScript : MonoBehaviour
 	private void diffImgSelector()
 	{
 		DifferenceImages differenceImages = JsonUtility.FromJson<DifferenceImages>(_optionsFile.text);
-		_selImgDifferences = differenceImages.differences[UnityEngine.Random.Range(0, differenceImages.differences.Length)];
+
+		int imgSelector = PlayerPrefs.GetInt(PlayerPrefsConsts.imageSelector, -1)+1;
+		Debug.Log(imgSelector);
+		if(imgSelector >= differenceImages.differences.Length)
+		{
+			PlayerPrefs.SetInt(PlayerPrefsConsts.imageSelector,-1);
+			imgSelector = 0;
+		}
+
+		
+		_selImgDifferences = differenceImages.differences[imgSelector];
 
 		Debug.Log("Image Name: "+ _selImgDifferences.name);
 
